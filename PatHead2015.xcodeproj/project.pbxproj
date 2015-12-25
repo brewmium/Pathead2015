@@ -387,6 +387,7 @@
 				0765013F1B1FCF4900A42A70 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

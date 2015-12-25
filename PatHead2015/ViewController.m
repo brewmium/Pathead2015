@@ -18,6 +18,7 @@
 #define kSpeedAdjust 2
 #define kNewHeadHoldoff 50
 #define kGameDuration 60
+#define kNumLives 3
 
 @interface ViewController () {
 	BOOL once;
@@ -74,10 +75,7 @@
 		[self applyLabelStyle:self.timeTitle];
 		[self applyLabelStyle:self.withLove];
 		
-		[self refreshTimer:kGameDuration];
-		[self refreshScore];
-		//self.scoreLabel.text = @"0";
-		
+
 		UIImage *lifeimg = [UIImage imageNamed:kPathead];
 		self.life1.image = lifeimg;
 		self.life2.image = lifeimg;
@@ -118,21 +116,28 @@
 		fail = [[AVAudioPlayer alloc] initWithData:fileData error:&error];
 		[fail prepareToPlay];
 		
-		running = NO;
+		[self resetGameValues];
 	}
+}
+
+- (void)resetGameValues
+{
+	running = NO;
+	score = 0;
+	lives = kNumLives;
+	speed = kSpeedMax;
+	self.life1.hidden = NO;
+	self.life2.hidden = NO;
+	self.life3.hidden = NO;
+	[self refreshTimer:kGameDuration];
+	[self refreshScore];
+	[self refreshLives];
 }
 
 - (IBAction)startGame:(id)sender;
 {
-	lives = 3;
-	speed = kSpeedMax;
-	score = 0;
+	[self resetGameValues];
 	self.startButton.hidden = YES;
-	self.life1.hidden = NO;
-	self.life2.hidden = NO;
-	self.life3.hidden = NO;
-	[self refreshLives];
-	[self refreshScore];
 	
 	[self delayedAction:[self rand:5 toMax:20] / 10.0 closure:^{
 		time = [NSDate timeIntervalSinceReferenceDate] + 60;
@@ -155,9 +160,10 @@
 	score++;
 	holdoff = kNewHeadHoldoff;
 	pathead.image = [UIImage imageNamed:kPathead2];
+	[self movePathead];
+	[self refreshScore];
 	[beep stop];
 	[beep play];
-	[self refreshScore];
 }
 
 - (void)gameboardTapped:(UITapGestureRecognizer *)gest;
